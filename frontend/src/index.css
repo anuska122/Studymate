@@ -1,26 +1,461 @@
 @import "tailwindcss";
 
+*,
+*::before,
+*::after {
+  /* Inherit box-sizing from html for easier project configuration */
+  box-sizing: border-box;
+}
+
+html {
+ 
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+  /* Enable smooth scrolling for navigating within the page */
+  scroll-behavior: smooth;
+  /* Allow the user agent to know that the page supports dark/light modes */
+  color-scheme: light dark;
+}
+
+/* Reset margins and paddings for all elements for a clean slate */
 * {
   margin: 0;
   padding: 0;
-  box-sizing: border-box;
 }
 
 body {
   margin: 0;
+  /* Comprehensive modern font stack */
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
+  /* Improve font rendering quality */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  /* Prevent horizontal scroll issues */
+  overflow-x: hidden;
+  /* Ensure the body always fills the viewport height */
+  min-height: 100vh;
+  /* Allows for absolute positioning of children relative to body */
+  position: relative;
+  /* Set base background/text colors for a light theme default */
+  background-color: #ffffff; /* White */
+  color: #1f2937; /* Gray-800 */
 }
 
+/* Main root element configuration (e.g., for React/Vue apps) */
 #root {
-  height: 100vh;
+  /* Use 100% of the body's min-height */
+  min-height: inherit;
   width: 100vw;
+  /* Prevents children from spilling out of the main container */
+  overflow: hidden;
+  position: relative;
 }
 
+/**
+ * ====================================================================
+ * 3. Typography & Text Enhancement
+ * ====================================================================
+ */
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 700; /* Slightly bolder for better hierarchy */
+  line-height: 1.25; /* Slightly relaxed line height */
+  margin-top: 1.5rem; /* Add spacing above headings */
+  margin-bottom: 0.75rem; /* Add spacing below headings */
+}
+
+p {
+  line-height: 1.75; /* Enhanced readability for paragraphs */
+  margin-bottom: 1rem;
+}
+
+/* Style for text selection */
+::selection {
+  background-color: #93c5fd; /* Blue-300 */
+  color: #1e3a8a; /* Blue-900 */
+}
+
+::-moz-selection {
+  background-color: #93c5fd;
+  color: #1e3a8a;
+}
+
+/**
+ * ====================================================================
+ * 4. Interactive Elements & Accessibility
+ * ====================================================================
+ */
+
+/* Enhance touch/click interaction on mobile devices */
+button,
+[role="button"],
+a {
+  /* Remove the default highlight on tap on iOS/Android */
+  -webkit-tap-highlight-color: transparent;
+  /* Prevents double-tap zoom behavior */
+  touch-action: manipulation;
+  /* Prevents accidental text selection */
+  user-select: none;
+  /* Ensure cursor is a pointer for all interactive elements */
+  cursor: pointer;
+}
+
+/* Normalize and enhance form elements */
+input,
+textarea,
+select {
+  /* Reset default appearance */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  /* Prevent unwanted zoom on iOS when input is focused */
+  font-size: 1rem;
+  /* Inherit font and color for consistency */
+  font-family: inherit;
+  color: black;
+}
+
+/* Focus States for Maximum Accessibility */
+/* Use the standard blue focus ring for keyboard users */
+*:focus-visible {
+  outline: 2px solid #3b82f6; /* Blue-500 */
+  outline-offset: 3px; /* Increased offset for better visibility */
+  border-radius: 6px; /* Slightly larger radius */
+}
+
+/* Remove the focus outline for non-keyboard (mouse/touch) users */
+*:focus:not(:focus-visible) {
+  outline: none;
+  box-shadow: none;
+}
+
+/* Improve tap targets on touch devices (44px minimum recommendation) */
+@media (pointer: coarse) {
+  button,
+  [role="button"],
+  a {
+    min-height: 48px; /* Slightly larger targets */
+    min-width: 48px;
+    padding: 0.5rem; /* Add padding to improve hit area */
+  }
+}
+
+/**
+ * ====================================================================
+ * 5. Scrollbar Customization
+ * ====================================================================
+ */
+
+/* Webkit-based Scrollbar (Chrome, Safari, Edge) */
+::-webkit-scrollbar {
+  width: 10px; /* Slightly wider for easier grab */
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f8fafc; /* Slate-50 - Very light track */
+}
+
+::-webkit-scrollbar-thumb {
+  background: #94a3b8; /* Slate-400 - Medium gray thumb */
+  border-radius: 5px;
+  border: 2px solid #f8fafc; /* Border to offset from the track background */
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #64748b; /* Slate-500 - Darker on hover */
+}
+
+/* Firefox Scrollbar Styling */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #94a3b8 #f8fafc; /* thumb color track color */
+}
+
+
+/**
+ * ====================================================================
+ * 6. Transitions & Animations
+ * ====================================================================
+ */
+
+/* Global Smooth Transitions */
+* {
+  /* Transition common properties for a smooth feel */
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 200ms; /* Slightly slower duration for more noticeable effect */
+}
+
+/* Disable transitions during a loading/initial phase to prevent flashes */
+.preload * {
+  transition: none !important;
+}
+
+/* Keyframe Definitions */
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.4s cubic-bezier(0.165, 0.84, 0.44, 1); /* Enhanced ease-out curve */
+}
+
+/* Error Shake Animation */
+@keyframes shake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  10%, 30%, 50%, 70%, 90% {
+    transform: translateX(-6px); /* Increased shake distance */
+  }
+  20%, 40%, 60%, 80% {
+    transform: translateX(6px);
+  }
+}
+
+.error-shake {
+  animation: shake 0.5s ease-in-out;
+}
+
+/* Success Bounce Animation */
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-12px); /* Increased bounce height */
+  }
+}
+
+.success-bounce {
+  animation: bounce 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55); /* More "bouncy" curve */
+}
+
+/* Loading Skeleton Animation */
+@keyframes shimmer {
+  0% {
+    background-position: -800px 0; /* Adjusted width for a smoother travel */
+  }
+  100% {
+    background-position: 800px 0;
+  }
+}
+
+.skeleton {
+  animation: shimmer 1.5s infinite linear; /* Slightly slower and linear for a fluid look */
+  background: linear-gradient(
+    to right,
+    #f3f4f6 0%, /* Gray-100 */
+    #e5e7eb 20%, /* Gray-200 */
+    #f3f4f6 40%,
+    #f3f4f6 100%
+  );
+  background-size: 1000px 100%;
+  border-radius: 4px;
+}
+
+
+/**
+ * ====================================================================
+ * 7. Media Queries (Responsiveness)
+ * ====================================================================
+ */
+
+/* Mobile Optimization (up to 640px) */
+@media (max-width: 640px) {
+  html {
+    font-size: 14px;
+  }
+
+  body {
+    /* Improve scrolling performance on older iOS devices */
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* Tablet Optimization (641px to 1024px) */
+@media (min-width: 641px) and (max-width: 1024px) {
+  html {
+    font-size: 15px;
+  }
+}
+
+/* Desktop Optimization (1025px and up) - Standard 16px */
+@media (min-width: 1025px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+/* High DPI Screens (Better font smoothing) */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  body {
+    -webkit-font-smoothing: subpixel-antialiased;
+  }
+}
+
+/* Reduced Motion Support (Crucial Accessibility Feature) */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+
+/**
+ * ====================================================================
+ * 8. Dark Mode Support
+ * ====================================================================
+ */
+@media (prefers-color-scheme: dark) {
+  body {
+    background-color: #0f172a; /* Slate-900 */
+    color: #e2e8f0; /* Slate-200 */
+  }
+  
+  /* Update Scrollbars for Dark Mode */
+  ::-webkit-scrollbar-track {
+    background: #1e293b; /* Slate-800 */
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: #475569; /* Slate-600 */
+    border-color: #1e293b;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    background: #64748b; /* Slate-500 */
+  }
+
+  /* Update Selection for Dark Mode */
+  ::selection {
+    background-color: #3b82f6; /* Blue-500 */
+    color: #eff6ff; /* Blue-50 */
+  }
+
+  ::-moz-selection {
+    background-color: #3b82f6;
+    color: #eff6ff;
+  }
+
+  /* Update Skeleton for Dark Mode */
+  .skeleton {
+    background: linear-gradient(
+      to right,
+      #1e293b 0%, /* Slate-800 */
+      #334155 20%, /* Slate-700 */
+      #1e293b 40%,
+      #1e293b 100%
+    );
+  }
+}
+
+/**
+ * ====================================================================
+ * 9. Utility & Print Styles
+ * ====================================================================
+ */
+
+/* Print Styles */
+@media print {
+  body {
+    background: white !important; /* Ensure white background for printing */
+    color: black !important;
+    /* Reset margins for optimal print area */
+    margin: 0 !important;
+    padding: 0 !important;
+    min-height: auto !important;
+  }
+  
+  * {
+    /* Remove shadows, borders, and transitions from printed elements */
+    box-shadow: none !important;
+    text-shadow: none !important;
+    border-color: #000 !important;
+    background-color: transparent !important;
+    /* Force visibility and reset animations */
+    animation: none !important;
+    transition: none !important;
+  }
+  
+  a,
+  a:visited {
+    /* Show URLs next to links for reference */
+    text-decoration: underline;
+    /* Hide specific elements if needed: display: none; */
+  }
+  
+  /* Add borders to form elements for visibility on paper */
+  button,
+  input,
+  textarea,
+  select {
+    border: 1px solid #000 !important;
+  }
+}
+
+/* Safe Area Insets (Modern mobile viewport utility) */
+.safe-area-inset-top {
+  padding-top: env(safe-area-inset-top);
+}
+
+.safe-area-inset-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.safe-area-inset-left {
+  padding-left: env(safe-area-inset-left);
+}
+
+.safe-area-inset-right {
+  padding-right: env(safe-area-inset-right);
+}
+
+/* Hide element visually but keep it accessible for screen readers */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
 }

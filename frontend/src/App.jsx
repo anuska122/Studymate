@@ -135,32 +135,36 @@ function App() {
 
   return (
     <div className="h-screen flex flex-col bg-gray-100">
-      <header className="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-4 shadow-lg">
+      <header className="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-3 sm:p-4 shadow-lg">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
-          <div className="flex items-center space-x-3">
-            <Brain size={32} />
+          <div className="flex items-center space-x-2 sm:space-x-3">
+            <Brain size={24} className="sm:w-8 sm:h-8" />
             <div>
-              <h1 className="text-2xl font-bold">StudyMate</h1>
-              <p className="text-xs text-blue-200">AI-Powered Learning</p>
+              <h1 className="text-lg sm:text-2xl font-bold">StudyMate</h1>
+              <p className="text-xs text-blue-200 hidden sm:block">AI-Powered Learning</p>
             </div>
           </div>
-          <div className={`flex items-center space-x-2 text-sm px-4 py-2 rounded-lg ${
+          <div className={`flex items-center space-x-1 sm:space-x-2 text-xs sm:text-sm px-2 sm:px-4 py-1 sm:py-2 rounded-lg ${
             backendStatus === 'connected' ? 'bg-green-500' : 
             backendStatus === 'disconnected' ? 'bg-red-500' : 'bg-yellow-500'
           }`}>
             <div className={`w-2 h-2 rounded-full bg-white ${
               backendStatus === 'connected' ? 'animate-pulse' : ''
             }`}></div>
-            <span className="font-medium">
+            <span className="font-medium hidden sm:inline">
               {backendStatus === 'connected' ? 'Connected' : 
                backendStatus === 'disconnected' ? 'Offline' : 'Checking...'}
+            </span>
+            <span className="font-medium sm:hidden">
+              {backendStatus === 'connected' ? '✓' : 
+               backendStatus === 'disconnected' ? '✗' : '...'}
             </span>
           </div>
         </div>
       </header>
 
       {error && backendStatus === 'disconnected' && (
-        <div className="bg-red-500 text-white px-4 py-2 text-center text-sm">
+        <div className="bg-red-500 text-white px-4 py-2 text-center text-xs sm:text-sm">
           ⚠️ {error}
         </div>
       )}
@@ -206,7 +210,7 @@ function App() {
         )}
       </main>
 
-      <footer className="bg-gray-800 text-gray-400 text-center py-2 text-xs">
+      <footer className="bg-gray-800 text-gray-400 text-center py-2 text-xs hidden sm:block">
         Powered by Llama 3.1 + ChromaDB + React + Vite
       </footer>
     </div>
@@ -218,23 +222,48 @@ function NotesView({
   newNote, setNewNote, error, setError, isLoading, backendStatus,
   handleCreateNote, startTest, loadConcepts, showConcepts, setShowConcepts, concepts
 }) {
+  const [showMobileMenu, setShowMobileMenu] = useState(false)
+  
   return (
-    <div className="flex h-full">
-      <aside className="w-1/3 border-r border-gray-200 overflow-y-auto bg-gray-50">
-        <div className="p-4 border-b border-gray-200 flex justify-between items-center bg-white sticky top-0 z-10">
-          <h2 className="text-lg font-semibold text-gray-800">My Notes</h2>
-          <button
-            onClick={() => setIsCreating(true)}
-            disabled={isLoading || backendStatus !== 'connected'}
-            className="p-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors disabled:bg-gray-400"
-          >
-            <Plus size={20} />
-          </button>
+    <div className="flex h-full relative">
+      <button 
+        onClick={() => setShowMobileMenu(!showMobileMenu)}
+        className="lg:hidden fixed bottom-4 right-4 z-20 p-4 bg-blue-500 text-white rounded-full shadow-lg hover:bg-blue-600"
+      >
+        <BookOpen size={24} />
+      </button>
+
+      <aside className={`
+        w-full lg:w-1/3 border-r border-gray-200 overflow-y-auto bg-gray-50
+        fixed lg:relative inset-0 z-10 lg:z-0
+        transition-transform duration-300 ease-in-out
+        ${showMobileMenu ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+      `}>
+        <div className="p-3 sm:p-4 border-b border-gray-200 flex justify-between items-center bg-white sticky top-0 z-10">
+          <h2 className="text-base sm:text-lg font-semibold text-gray-800">My Notes</h2>
+          <div className="flex items-center space-x-2">
+            <button
+              onClick={() => {
+                setIsCreating(true)
+                setShowMobileMenu(false)
+              }}
+              disabled={isLoading || backendStatus !== 'connected'}
+              className="p-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors disabled:bg-gray-400"
+            >
+              <Plus size={18} className="sm:w-5 sm:h-5" />
+            </button>
+            <button 
+              onClick={() => setShowMobileMenu(false)}
+              className="lg:hidden p-2 text-gray-600 hover:bg-gray-100 rounded-lg"
+            >
+              ✕
+            </button>
+          </div>
         </div>
-        <div className="p-3">
+        <div className="p-2 sm:p-3">
           {notes.length === 0 ? (
-            <div className="text-center p-8 text-gray-400">
-              <BookOpen size={48} className="mx-auto mb-3 opacity-50" />
+            <div className="text-center p-6 sm:p-8 text-gray-400">
+              <BookOpen size={40} className="sm:w-12 sm:h-12 mx-auto mb-3 opacity-50" />
               <p className="text-sm">No notes yet</p>
               <p className="text-xs mt-2">Create your first note!</p>
             </div>
@@ -242,19 +271,24 @@ function NotesView({
             notes.map(note => (
               <div
                 key={note.id}
-                onClick={() => { setSelectedNote(note); setShowConcepts(false); }}
-                className={`p-4 mb-2 rounded-lg cursor-pointer transition-all ${
+                onClick={() => { 
+                  setSelectedNote(note)
+                  setShowConcepts(false)
+                  setShowMobileMenu(false)
+                }}
+                className={`p-3 sm:p-4 mb-2 rounded-lg cursor-pointer transition-all ${
                   selectedNote?.id === note.id 
                     ? 'bg-blue-50 border-2 border-blue-300 shadow-md' 
                     : 'bg-white border border-gray-200 hover:shadow-md'
                 }`}
               >
-                <h3 className="font-semibold text-gray-900">{note.title}</h3>
-                <p className="text-sm text-blue-600 mt-1 font-medium">{note.subject}</p>
-                <div className="flex items-center justify-between mt-3">
+                <h3 className="font-semibold text-sm sm:text-base text-gray-900">{note.title}</h3>
+                <p className="text-xs sm:text-sm text-blue-600 mt-1 font-medium">{note.subject}</p>
+                <div className="flex items-center justify-between mt-2 sm:mt-3">
                   <div className="flex items-center text-xs text-gray-500">
                     <Calendar size={12} className="mr-1" />
-                    {note.next_review}
+                    <span className="hidden sm:inline">{note.next_review}</span>
+                    <span className="sm:hidden">{note.next_review.split(' ')[0]}</span>
                   </div>
                   {note.chunks_created && (
                     <div className="text-xs text-gray-400">
@@ -290,10 +324,10 @@ function NotesView({
             concepts={concepts}
           />
         ) : (
-          <div className="flex items-center justify-center h-full text-gray-400">
+          <div className="flex items-center justify-center h-full text-gray-400 p-4">
             <div className="text-center">
-              <BookOpen size={64} className="mx-auto mb-4 opacity-50" />
-              <p className="text-lg">Select a note or create new</p>
+              <BookOpen size={48} className="sm:w-16 sm:h-16 mx-auto mb-4 opacity-50" />
+              <p className="text-base sm:text-lg">Select a note or create new</p>
             </div>
           </div>
         )}
@@ -304,12 +338,12 @@ function NotesView({
 
 function CreateNoteForm({ newNote, setNewNote, error, isLoading, handleCreateNote, onCancel }) {
   return (
-    <div className="p-8 max-w-4xl mx-auto">
-      <h2 className="text-3xl font-bold mb-6 text-gray-800">Create New Note</h2>
+    <div className="p-4 sm:p-6 lg:p-8 max-w-4xl mx-auto">
+      <h2 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6 text-gray-800">Create New Note</h2>
       
       {error && (
-        <div className="mb-4 p-4 bg-red-50 border-l-4 border-red-500 text-red-700 rounded flex items-center">
-          <AlertCircle size={20} className="mr-2" />
+        <div className="mb-4 p-3 sm:p-4 bg-red-50 border-l-4 border-red-500 text-red-700 rounded flex items-center text-sm">
+          <AlertCircle size={18} className="mr-2 flex-shrink-0" />
           <span>{error}</span>
         </div>
       )}
@@ -322,7 +356,7 @@ function CreateNoteForm({ newNote, setNewNote, error, isLoading, handleCreateNot
             placeholder="e.g., Introduction to Biology"
             value={newNote.title}
             onChange={(e) => setNewNote({ ...newNote, title: e.target.value })}
-            className="w-full p-3 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none"
+            className="w-full p-2 sm:p-3 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none text-sm sm:text-base"
           />
         </div>
         
@@ -333,7 +367,7 @@ function CreateNoteForm({ newNote, setNewNote, error, isLoading, handleCreateNot
             placeholder="e.g., Biology, Physics"
             value={newNote.subject}
             onChange={(e) => setNewNote({ ...newNote, subject: e.target.value })}
-            className="w-full p-3 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none"
+            className="w-full p-2 sm:p-3 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none text-sm sm:text-base"
           />
         </div>
         
@@ -345,20 +379,20 @@ function CreateNoteForm({ newNote, setNewNote, error, isLoading, handleCreateNot
             placeholder="Write detailed notes..."
             value={newNote.content}
             onChange={(e) => setNewNote({ ...newNote, content: e.target.value })}
-            className="w-full p-3 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none h-64 resize-none"
+            className="w-full p-2 sm:p-3 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none h-48 sm:h-64 resize-none text-sm sm:text-base"
           />
           <div className="text-xs text-gray-500 mt-1">
             Words: {newNote.content.split(' ').filter(w => w).length}
           </div>
         </div>
         
-        <div className="flex items-center space-x-6">
+        <div className="flex flex-col sm:flex-row sm:items-center space-y-3 sm:space-y-0 sm:space-x-6">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">Review after:</label>
             <select
               value={newNote.reviewDays}
               onChange={(e) => setNewNote({ ...newNote, reviewDays: parseInt(e.target.value) })}
-              className="p-2 border-2 border-gray-300 rounded-lg focus:border-blue-500"
+              className="p-2 border-2 border-gray-300 rounded-lg focus:border-blue-500 text-sm w-full sm:w-auto"
             >
               <option value={1}>1 day</option>
               <option value={3}>3 days</option>
@@ -382,18 +416,18 @@ function CreateNoteForm({ newNote, setNewNote, error, isLoading, handleCreateNot
           </div>
         </div>
         
-        <div className="flex space-x-3 pt-4">
+        <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3 pt-4">
           <button
             onClick={handleCreateNote}
             disabled={isLoading}
-            className="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 font-medium disabled:bg-gray-400 flex items-center space-x-2"
+            className="w-full sm:w-auto px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 font-medium disabled:bg-gray-400 flex items-center justify-center space-x-2"
           >
             {isLoading && <Loader size={16} className="animate-spin" />}
             <span>{isLoading ? 'Creating...' : 'Save Note'}</span>
           </button>
           <button
             onClick={onCancel}
-            className="px-6 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 font-medium"
+            className="w-full sm:w-auto px-6 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 font-medium"
           >
             Cancel
           </button>
@@ -405,66 +439,66 @@ function CreateNoteForm({ newNote, setNewNote, error, isLoading, handleCreateNot
 
 function NoteDetail({ selectedNote, error, isLoading, backendStatus, startTest, loadConcepts, showConcepts, concepts }) {
   return (
-    <div className="p-8 max-w-4xl mx-auto">
-      <div className="flex justify-between items-start mb-6">
+    <div className="p-4 sm:p-6 lg:p-8 max-w-4xl mx-auto">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-4 sm:mb-6 space-y-3 sm:space-y-0">
         <div>
-          <h2 className="text-3xl font-bold text-gray-800 mb-2">{selectedNote.title}</h2>
-          <span className="text-blue-600 font-medium">{selectedNote.subject}</span>
+          <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">{selectedNote.title}</h2>
+          <span className="text-sm sm:text-base text-blue-600 font-medium">{selectedNote.subject}</span>
         </div>
-        <div className="flex space-x-2">
+        <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
           <button
             onClick={() => loadConcepts(selectedNote.id)}
             disabled={isLoading}
-            className="px-4 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600 font-medium flex items-center space-x-2 disabled:bg-gray-400"
+            className="px-3 sm:px-4 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600 font-medium flex items-center justify-center space-x-2 disabled:bg-gray-400 text-sm"
           >
-            <TrendingUp size={18} />
+            <TrendingUp size={16} className="sm:w-[18px] sm:h-[18px]" />
             <span>Concepts</span>
           </button>
           <button
             onClick={() => startTest(selectedNote.id)}
             disabled={isLoading || backendStatus !== 'connected'}
-            className="px-6 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 font-medium flex items-center space-x-2 disabled:bg-gray-400"
+            className="px-4 sm:px-6 py-2 sm:py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 font-medium flex items-center justify-center space-x-2 disabled:bg-gray-400 text-sm"
           >
-            {isLoading ? <Loader size={20} className="animate-spin" /> : <Brain size={20} />}
+            {isLoading ? <Loader size={18} className="sm:w-5 sm:h-5 animate-spin" /> : <Brain size={18} className="sm:w-5 sm:h-5" />}
             <span>{isLoading ? 'Generating...' : 'Start Test'}</span>
           </button>
         </div>
       </div>
       
       {error && (
-        <div className="mb-4 p-4 bg-red-50 border-l-4 border-red-500 text-red-700 rounded flex items-center">
-          <AlertCircle size={20} className="mr-2" />
+        <div className="mb-4 p-3 sm:p-4 bg-red-50 border-l-4 border-red-500 text-red-700 rounded flex items-center text-sm">
+          <AlertCircle size={18} className="mr-2 flex-shrink-0" />
           <span>{error}</span>
         </div>
       )}
       
       {showConcepts && concepts && (
-        <div className="mb-6 bg-purple-50 p-6 rounded-lg border-2 border-purple-200">
-          <h3 className="text-xl font-bold text-purple-900 mb-4">Key Concepts</h3>
-          <div className="grid grid-cols-2 gap-4">
+        <div className="mb-4 sm:mb-6 bg-purple-50 p-4 sm:p-6 rounded-lg border-2 border-purple-200">
+          <h3 className="text-lg sm:text-xl font-bold text-purple-900 mb-3 sm:mb-4">Key Concepts</h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
             {concepts.key_concepts.map((concept, idx) => (
-              <div key={idx} className="bg-white p-4 rounded-lg border border-purple-200">
-                <div className="font-semibold text-purple-700">{concept.concept}</div>
+              <div key={idx} className="bg-white p-3 sm:p-4 rounded-lg border border-purple-200">
+                <div className="font-semibold text-sm sm:text-base text-purple-700">{concept.concept}</div>
                 <div className="text-xs text-gray-500 mt-1">Frequency: {concept.frequency}</div>
-                <div className="text-xs text-gray-600 mt-2">{concept.example_context.substring(0, 80)}...</div>
+                <div className="text-xs text-gray-600 mt-2 line-clamp-2">{concept.example_context.substring(0, 80)}...</div>
               </div>
             ))}
           </div>
         </div>
       )}
       
-      <div className="bg-gray-50 p-6 rounded-lg border border-gray-200">
-        <h3 className="text-sm font-semibold text-gray-600 mb-3 uppercase">Content</h3>
-        <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">{selectedNote.content}</p>
+      <div className="bg-gray-50 p-4 sm:p-6 rounded-lg border border-gray-200">
+        <h3 className="text-xs sm:text-sm font-semibold text-gray-600 mb-2 sm:mb-3 uppercase">Content</h3>
+        <p className="text-sm sm:text-base text-gray-700 leading-relaxed whitespace-pre-wrap">{selectedNote.content}</p>
       </div>
       
-      <div className="mt-6 flex items-center justify-between text-sm text-gray-500">
+      <div className="mt-4 sm:mt-6 flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0 text-xs sm:text-sm text-gray-500">
         <div className="flex items-center">
-          <Clock size={16} className="mr-2" />
+          <Clock size={14} className="sm:w-4 sm:h-4 mr-2" />
           <span>Created: {selectedNote.date}</span>
         </div>
         <div className="flex items-center">
-          <Calendar size={16} className="mr-2" />
+          <Calendar size={14} className="sm:w-4 sm:h-4 mr-2" />
           <span>Review: {selectedNote.next_review}</span>
         </div>
       </div>
@@ -478,42 +512,42 @@ function TestView({ currentTest, userAnswers, setUserAnswers, testResults, isLoa
   }
 
   return (
-    <div className="p-8 max-w-4xl mx-auto">
-      <div className="mb-8">
-        <h2 className="text-3xl font-bold text-gray-800 mb-2">Test</h2>
-        <p className="text-gray-600">Answer all questions</p>
-        <span className="inline-block mt-3 px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">
+    <div className="p-4 sm:p-6 lg:p-8 max-w-4xl mx-auto">
+      <div className="mb-6 sm:mb-8">
+        <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">Test</h2>
+        <p className="text-sm sm:text-base text-gray-600">Answer all questions</p>
+        <span className="inline-block mt-3 px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-xs sm:text-sm">
           {currentTest?.questions?.length || 0} Questions
         </span>
       </div>
 
       {error && (
-        <div className="mb-4 p-4 bg-red-50 border-l-4 border-red-500 text-red-700 rounded flex items-center">
-          <AlertCircle size={20} className="mr-2" />
+        <div className="mb-4 p-3 sm:p-4 bg-red-50 border-l-4 border-red-500 text-red-700 rounded flex items-center text-sm">
+          <AlertCircle size={18} className="mr-2 flex-shrink-0" />
           {error}
         </div>
       )}
 
-      <div className="space-y-6">
+      <div className="space-y-4 sm:space-y-6">
         {currentTest?.questions?.map((q, idx) => (
-          <div key={idx} className="bg-white p-6 rounded-lg border-2 border-gray-200 shadow-sm">
-            <h3 className="font-semibold text-lg text-gray-800 mb-4">
+          <div key={idx} className="bg-white p-4 sm:p-6 rounded-lg border-2 border-gray-200 shadow-sm">
+            <h3 className="font-semibold text-base sm:text-lg text-gray-800 mb-3 sm:mb-4">
               Q{idx + 1}: {q.question}
             </h3>
             
             {q.type === 'mcq' && q.options ? (
               <div className="space-y-2">
                 {q.options.map((option, i) => (
-                  <label key={i} className="flex items-center p-3 border border-gray-300 rounded-lg cursor-pointer hover:bg-blue-50">
+                  <label key={i} className="flex items-start p-3 border border-gray-300 rounded-lg cursor-pointer hover:bg-blue-50 transition-colors">
                     <input
                       type="radio"
                       name={`q${idx}`}
                       value={option}
                       checked={userAnswers[idx] === option}
                       onChange={(e) => setUserAnswers({...userAnswers, [idx]: e.target.value})}
-                      className="mr-3"
+                      className="mr-3 mt-1 flex-shrink-0"
                     />
-                    <span>{option}</span>
+                    <span className="text-sm sm:text-base">{option}</span>
                   </label>
                 ))}
               </div>
@@ -522,18 +556,18 @@ function TestView({ currentTest, userAnswers, setUserAnswers, testResults, isLoa
                 placeholder="Type your answer..."
                 value={userAnswers[idx] || ''}
                 onChange={(e) => setUserAnswers({...userAnswers, [idx]: e.target.value})}
-                className="w-full p-3 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none h-24"
+                className="w-full p-3 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none h-20 sm:h-24 text-sm sm:text-base"
               />
             )}
           </div>
         ))}
       </div>
 
-      <div className="mt-8 flex space-x-4">
+      <div className="mt-6 sm:mt-8 flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4">
         <button
           onClick={submitTest}
           disabled={isLoading}
-          className="px-8 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 font-medium disabled:bg-gray-400 flex items-center space-x-2"
+          className="w-full sm:w-auto px-8 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 font-medium disabled:bg-gray-400 flex items-center justify-center space-x-2"
         >
           {isLoading && <Loader size={16} className="animate-spin" />}
           <span>{isLoading ? 'Evaluating...' : 'Submit'}</span>
@@ -541,7 +575,7 @@ function TestView({ currentTest, userAnswers, setUserAnswers, testResults, isLoa
         <button
           onClick={onBack}
           disabled={isLoading}
-          className="px-8 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 font-medium"
+          className="w-full sm:w-auto px-8 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 font-medium"
         >
           Cancel
         </button>
@@ -552,19 +586,19 @@ function TestView({ currentTest, userAnswers, setUserAnswers, testResults, isLoa
 
 function TestResults({ testResults, onBack }) {
   return (
-    <div className="p-8 max-w-4xl mx-auto">
-      <div className="text-center mb-8">
-        <h2 className="text-3xl font-bold text-gray-800 mb-4">Results</h2>
-        <div className="inline-block bg-gradient-to-br from-blue-100 to-blue-200 rounded-2xl px-12 py-6 shadow-lg">
-          <div className="text-6xl font-bold text-blue-700">
+    <div className="p-4 sm:p-6 lg:p-8 max-w-4xl mx-auto">
+      <div className="text-center mb-6 sm:mb-8">
+        <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-4">Results</h2>
+        <div className="inline-block bg-gradient-to-br from-blue-100 to-blue-200 rounded-2xl px-8 sm:px-12 py-5 sm:py-6 shadow-lg">
+          <div className="text-5xl sm:text-6xl font-bold text-blue-700">
             {Math.round(testResults.overall_score)}%
           </div>
         </div>
         
         {testResults.spaced_repetition && (
-          <div className="mt-6 p-4 bg-green-50 border border-green-200 rounded-lg inline-block">
-            <div className="flex items-center text-green-800">
-              <Calendar size={18} className="mr-2" />
+          <div className="mt-4 sm:mt-6 p-3 sm:p-4 bg-green-50 border border-green-200 rounded-lg inline-block">
+            <div className="flex items-center text-green-800 text-sm sm:text-base">
+              <Calendar size={16} className="sm:w-[18px] sm:h-[18px] mr-2" />
               <span className="font-medium">
                 Next Review: {testResults.spaced_repetition.next_review_date}
               </span>
@@ -573,23 +607,23 @@ function TestResults({ testResults, onBack }) {
         )}
       </div>
 
-      <div className="space-y-4">
+      <div className="space-y-3 sm:space-y-4">
         {testResults.results.map((result, idx) => (
-          <div key={idx} className={`p-6 rounded-lg border-2 ${
+          <div key={idx} className={`p-4 sm:p-6 rounded-lg border-2 ${
             result.is_correct ? 'bg-green-50 border-green-300' : 'bg-yellow-50 border-yellow-300'
           }`}>
             <div className="flex items-start">
               {result.is_correct ? (
-                <CheckCircle className="text-green-600 mr-3 mt-1" size={24} />
+                <CheckCircle className="text-green-600 mr-3 mt-1 flex-shrink-0" size={20} />
               ) : (
-                <AlertCircle className="text-yellow-600 mr-3 mt-1" size={24} />
+                <AlertCircle className="text-yellow-600 mr-3 mt-1 flex-shrink-0" size={20} />
               )}
-              <div className="flex-1">
-                <div className="flex justify-between mb-2">
-                  <h3 className="font-semibold">Q{idx + 1}</h3>
-                  <span className="text-lg font-bold">{result.score}%</span>
+              <div className="flex-1 min-w-0">
+                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-2">
+                  <h3 className="font-semibold text-sm sm:text-base">Q{idx + 1}</h3>
+                  <span className="text-lg sm:text-xl font-bold mt-1 sm:mt-0">{result.score}%</span>
                 </div>
-                <p className="text-gray-700">{result.feedback}</p>
+                <p className="text-sm sm:text-base text-gray-700 break-words">{result.feedback}</p>
               </div>
             </div>
           </div>
@@ -598,7 +632,7 @@ function TestResults({ testResults, onBack }) {
 
       <button
         onClick={onBack}
-        className="mt-8 px-8 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 font-medium w-full"
+        className="mt-6 sm:mt-8 px-8 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 font-medium w-full"
       >
         Back to Notes
       </button>

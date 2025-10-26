@@ -1,7 +1,7 @@
 
 """
 Advanced RAG techniques for StudyMate
-Implement these to improve question generation and answer evaluation
+Implementing these to improve question generation and answer evaluation
 """
 
 from typing import List, Dict, Tuple
@@ -56,7 +56,7 @@ class SemanticChunker:
         sentences = re.split(r'(?<=[.!?])\s+', text)
         return [s.strip() for s in sentences if s.strip() and len(s.strip()) > 10]
 
-# 2. QUERY EXPANSION
+# QUERY EXPANSION
     
 class QueryExpander:
     """Expand user queries to improve retrieval"""
@@ -82,8 +82,7 @@ class QueryExpander:
         """Add subject context to query"""
         return f"{query} in the context of {note_subject}"
 
-# 3. HYBRID SEARCH (BM25 + Semantic)
-
+# HYBRID SEARCH (BM25 + Semantic)
 
 class HybridRetriever:
     """Combine keyword-based and semantic search"""
@@ -161,7 +160,7 @@ class HybridRetriever:
         ranked = sorted(scores.items(), key=lambda x: x[1], reverse=True)
         return [{'document': doc, 'score': score} for doc, score in ranked]
 
-# 4. SPACED REPETITION (SM-2 Algorithm)
+# SPACED REPETITION (SM-2 Algorithm)
 
 class SpacedRepetition:
     """Implement Anki-style spaced repetition"""
@@ -216,7 +215,7 @@ class SpacedRepetition:
         else:
             return 0  # Failed
 
-# 5. QUESTION DIFFICULTY CALIBRATION
+# QUESTION DIFFICULTY CALIBRATION
 
 
 class QuestionDifficultyEstimator:
@@ -264,8 +263,7 @@ class QuestionDifficultyEstimator:
         
         return balanced
 
-# 6. CONTEXT-AWARE PROMPTS
-
+# CONTEXT-AWARE PROMPTS
 
 class PromptOptimizer:
     """Generate optimized prompts for different tasks"""
@@ -364,8 +362,7 @@ Provide evaluation as JSON:
 }}"""
         return prompt
 
-# 7. ACTIVE LEARNING - IDENTIFY WEAK AREAS
-
+# ACTIVE LEARNING - IDENTIFY WEAK AREAS
 
 class WeaknessIdentifier:
     """Identify topics where student needs more practice"""
@@ -451,7 +448,7 @@ class WeaknessIdentifier:
         else:
             return f"Almost there! Practice application and analysis questions in {weak_topic['topic']}."
 
-# 8. ADAPTIVE TESTING
+# ADAPTIVE TESTING
 class AdaptiveTestGenerator:
     """Generate tests that adapt to student performance"""
     
@@ -512,7 +509,7 @@ class AdaptiveTestGenerator:
             'weak_subtopics': []
         }
 
-# 9. PERFORMANCE ANALYTICS
+# PERFORMANCE ANALYTICS
 class PerformanceAnalyzer:
     """Analyze and visualize student performance"""
     
@@ -605,7 +602,7 @@ class PerformanceAnalyzer:
             'estimated_score_next_test': min(100, current_score + improvement_rate)
         }
 
-# 10. CONCEPT EXTRACTION
+# CONCEPT EXTRACTION
 
 class ConceptExtractor:
     """Extract key concepts from notes for targeted testing"""

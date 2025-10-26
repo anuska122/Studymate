@@ -64,7 +64,7 @@ collection = chroma_client.get_or_create_collection(
 
 # Initialize advanced RAG components
 if ADVANCED_FEATURES:
-    print("🚀 Initializing advanced RAG features...")
+    print("Initializing advanced RAG features...")
     semantic_chunker = SemanticChunker(model_name=EMBEDDING_MODEL_NAME)
     hybrid_retriever = HybridRetriever(collection, embedding_model)
     spaced_rep = SpacedRepetition()
@@ -74,7 +74,7 @@ if ADVANCED_FEATURES:
     prompt_optimizer = PromptOptimizer()
     concept_extractor = ConceptExtractor()
     difficulty_estimator = QuestionDifficultyEstimator()
-    print("✅ Advanced features initialized!")
+    print("Advanced features initialized!")
 
 # Pydantic Models
 class Note(BaseModel):
@@ -150,7 +150,7 @@ def retrieve_context(query: str, note_id: str, top_k: int = 5) -> str:
     """Retrieve context from ChromaDB"""
     try:
         if ADVANCED_FEATURES:
-            # Use hybrid retrieval
+            # hybrid retrieval
             results = hybrid_retriever.retrieve(
                 query=query,
                 note_id=note_id,
@@ -159,7 +159,7 @@ def retrieve_context(query: str, note_id: str, top_k: int = 5) -> str:
             )
             return "\n\n".join([r['document'] for r in results]) if results else ""
         else:
-            # Use basic semantic search
+            # basic semantic search
             results = collection.query(
                 query_texts=[query],
                 n_results=top_k,
@@ -167,7 +167,7 @@ def retrieve_context(query: str, note_id: str, top_k: int = 5) -> str:
             )
             return "\n\n".join(results['documents'][0]) if results['documents'] else ""
     except Exception as e:
-        print(f"⚠️ Retrieval error: {str(e)}")
+        print(f"Retrieval error: {str(e)}")
         return ""
 
 # API Endpoints
@@ -238,9 +238,9 @@ async def create_note(note: Note):
             try:
                 key_concepts = concept_extractor.extract_key_concepts(note.content, top_n=10)
             except Exception as e:
-                print(f"⚠️ Concept extraction failed: {str(e)}")
+                print(f"Concept extraction failed: {str(e)}")
         
-        # Choose chunking method
+        # Choosing chunking method
         if ADVANCED_FEATURES and note.use_semantic_chunking:
             try:
                 chunks = semantic_chunker.chunk_by_similarity(note.content, threshold=0.5)
@@ -264,7 +264,7 @@ async def create_note(note: Note):
                 }]
             )
         
-        # Calculate next review date
+        # Calculating next review date
         next_review = (datetime.now() + timedelta(days=note.review_days)).strftime("%Y-%m-%d")
         
         return NoteResponse(
@@ -288,7 +288,7 @@ async def generate_test(request: TestRequest):
     Supports adaptive testing based on history
     """
     try:
-        # Get adaptive config if requested
+        # Getting adaptive config if requested
         bloom_levels = request.bloom_levels or ['understand', 'apply', 'analyze']
         
         if ADVANCED_FEATURES and request.use_adaptive:
