@@ -1,7 +1,4 @@
-"""
-Advanced RAG techniques for StudyMate
-Now integrated with Hugging Face mistral-7b-instruct
-"""
+# Advanced RAG techniques for StudyMate
 
 from typing import List, Dict, Tuple
 import re
